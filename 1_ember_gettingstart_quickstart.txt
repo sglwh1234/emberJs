@@ -1,0 +1,149 @@
+
+
+Ember 过程： 1. 安装ember 2.建立项目（application）3.定义route（可以把route看成是页面） 4.写UI组件 5.部署到生产环境
+
+1. 新建项目  ember new  + 项目名称 
+2. 启动服务  ember serve  测试新建项目是否有效：http://localhost:4200/ 
+3. application template  （可以引用欢迎页 welcome page)
+app/templates/application.hbs  
+
+4. 定义route： 用generator 生成 route： 命令如下： ember generate route scientists
+以上命令会生成主要两个文件 x.js  和 x.hbs  和一个测试文件 x-test.js：
+installing route
+  create app/routes/scientists.js
+  create app/templates/scientists.hbs
+updating router
+  add route scientists
+installing route-test
+  create tests/unit/routes/scientists-test.js
+
+访问路由后有如下： 
+	可以 http://ipaddress:端口/+ 定义好的route名字 访问页面   http://localhost:4200/scientists
+	route对象可以取回被template（模板） 使用的model（模型）
+	应用程序的router 在 app/router.js
+        route 的单元测试
+
+编写模板:打开app/templates/x.hbs(如：app/templates/scientists.hbs)，在x.hbs文件中编写 html便签，如（<h2>List of Scientists</h2>） ,然后 <h2>标签渲染的内容会追加在application.hbs template渲染的内容之后。
+
+在app/routes/scientists.js 文件中为route添加指定model来定义数据（固定数据或异步数据）。如：
+		model(){
+		return ['Marie Curie', 'Mae Jemison', 'Albert Hofmann'];
+		}
+
+相当于把scientist.js的数据和scientist.hbs的html标签组合成一个页面，
+
+{{welcome-page}}  引用默认 Welcome Page.
+{{outlet}} : 引用嵌入式 route进行渲染    
+boilerplate code样板文件代码
+render 渲染
+ember serve
+ember generate route  + 路由名
+
+add  model() method  to route
+
+overview of the newest JavaScript features  ???
+
+fetch data asynchronously   JavaScript Promises  ???
+
+how to turn that array of strings into HTML.:
+
+
+4. UI Component :  refactor templates into reusable components.
+ember generate component +  组件名 （新建的主键会放在一个components的文件夹中）    eg: ember generate component people-list
+
+编写模板:打开app/templates/components/x.hbs(如：app/templates/components/people-list.hbs)，在x.hbs文件中编写 html静态标签或动态标签，如（<h2>List of Scientists</h2> 或 <h2>{{title}}</h2>） ,然后 <h2>标签渲染的内容会追加在application.hbs template渲染的内容之后。
+
+
+
+
+Click Event:
+action helper: to add event listeners to elements and call named functions. 
+By default, the action helper adds a click event listener, but it can be used to listen for any element event.
+
+actions object : 当事件（如点击事件）促发后，就会在相对应的x.js文件中去调用函数。
+在people-list.hbs 组件模板中， action "showPerson" 是函数名， per 是需要传递的参数。
+<ul>
+  {{#each pep as |per|}}
+   <li {{action "showPerson" per}}>{{per}}</li>
+  {{/each}}
+</ul>
+
+本例子中：people-list.js 中是：
+actions: {
+    showPerson(person) {
+      alert(person);
+    }
+
+
+
+Building For Production：
+打包：ember build --env production    或 ember build -prod    (ember help build可以查帮助命令）
+dist/ 文件夹中能看到构建好的包。
+可以部署到Ember提供的：http://ember-cli-deploy.com/
+或 apache Web Server :
+If you deploy your application to an Apache web server, first create a new virtual host (可由Docker容器代替）for the application. To make sure all routes are handled by index.html, add the following directive to the application'
+s virtual host configuration:
+
+FallbackResource index.html
+
+步骤： ssh 到自己的虚拟主机: ssh username@ipaddress 
+   
+
+
+添加nginx :官网上查找
+           curl -O + http://nginx.org/keys/nginx-signing.ke
+            ls 查找ngix_sign.key 文件
+           apt-key add ngix_sign.key
+           按官网要求编辑/etc/apt/sources.list文件 （codename要对应版本） ,把新的源添加到文件中。
+           更新系统的源：sudo apt-get update
+              apt-get install nginx
+           确认新添加的源是否生效：apt-cache show nginx
+                          service nginx status       或 service --status-all 可以查看到服务在运行。
+                                 或访问服务器可有看到nginx服务页面。
+
+主流linux配置文件在: /etc 路径下   ， nginx.conf 文件
+                     虚拟主机放在 conf.d 目录夏
+                     default.conf
+                     service nginx 会显示所有子命令
+                     service nginx configtest : 查看config 文件中的语法是否是ok的。或 			service nginx check-reload
+			service nginx reload
+
+
+
+部署Ember
+
+                    
+
+
+rsync 同步工具： 将源文件和目标文件进行同步 ： 如 rsync -r dist/ root@ipaddress:/app
+
+更改owner :  sudo chown username:groupname  /app
+
+rsync -rv dist/ root@ipaddress  (-v 可有看到同步的过程）
+
+
+
+上传到虚拟主机后修改/etc 路径下， nginx.conf 文件
+vi /etc/nginx/conf.d/default.config (更改server_name为你的服务器名， location 下root为：　 /app)
+
+
+  添加路由的另一种方法是编辑 /app/router.js文件
+如：Router.map(function() {
+  this.route('scientists');
+});
+
+service nginx reload 重新加载项目
+
+在emberjs官方文档： Demployents章节找到nginx.conf, 把文件中的try_files.....拷贝到项目中的nginx.conf 的location 花括号内。
+
+
+ 运行完 ember serve 后会在项目产生一个 /dist目录
+
+
+自动部署： 参考ember Deploy 官方文档http://ember-cli-deploy.com/docs/v1.0.x/
+ember deploy
+deploy pipeline, which consists of several pipeline hooks.
+
+ember install ember-cli-deploy
+customize your pipeline to suit your application’s specific needs.
+configure your pipeline, start by looking at the list of community plugins. 

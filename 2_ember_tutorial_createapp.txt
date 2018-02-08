@@ -1,0 +1,86 @@
+安装ember 参考：  quick start
+
+ember 项目结构:
+app: 存放folders and files for models, components, routes, templates and styles 
+config： environment.js  环境设置
+node_modules/package: 通过Node 创建ember项目，该所依赖的包都存放在node_modules， package.json 则是这些依赖的列表单。
+public: This directory contains assets such as images and fonts.
+vendor: This directory is where front-end dependencies (such as JavaScript or CSS) that are not managed by NPM go.
+tests / testem.js: Automated tests for our app go in the tests folder, and Ember CLI's test runner testem is configured in testem.js.
+ember-cli-build.js: This file describes how Ember CLI should build our app.
+
+
+ES6 Modules
+app/router.js
+eg:
+import EmberRouter from '@ember/routing/router';
+import config from './config/environment';
+
+const Router = EmberRouter.extend({
+  location: config.locationType,
+  rootURL: config.rootURL
+});
+
+Router.map(function() {
+});
+
+export default Router;
+
+Ember CLI uses ECMAScript 2015 (ES2015 for short or previously known as ES6) modules to organize application code. For example, the line import EmberRouter from '@ember/routing/router'; gives us access to Ember's Router class as the variable EmberRouter. And the import config from './config/environment'; line gives us access to our app's configuration data as the variable config. const is a way to declare a read-only variable to make sure it is not accidentally reassigned elsewhere. At the end of the file, export default Router; makes the Router variable defined in this file available to other parts of the app
+
+
+
+Development Server 
+ember serve 或 ember s
+http://localhost:4200, we'll see the default welcome screen. When we edit the app/templates/application.hbs file, we'll replace that content with our own.
+
+
+Planning Your App 
+设计home page, about page and contact page
+例子：租房系统设计：
+Show rentals on the home page
+Link to information about the company
+Link to contact information
+List the available rentals
+Filter the list of rentals by city
+Show more details for a selected rental
+
+Ember Acceptance Test
+To create an acceptance test, run ember generate acceptance-test <name>. 
+For example: ember g acceptance-test list-rentals
+执行语句会产生一个文件：tests/acceptance/list-rentals-test.js.
+Opening that file will reveal some initial code that will try to go to the list-rentals route and verify that the route is loaded. The initial code is there to help us build our first acceptance test.
+
+To do that, replace occurrences of /list-rentals in the generated test with /. The test will start our app at the base url, http://localhost:4200/, and then do a basic check that the page has finished loading and that the url is what we want it to be.
+
+/tests/acceptance/list-rentals-test.js 文件中的代码：
+import { test } from 'qunit';
+import moduleForAcceptance from 'super-rentals/tests/helpers/module-for-acceptance';
+
+moduleForAcceptance('Acceptance | list-rentals');
+
+test('visiting /list-rentals', function(assert) {
+test('visiting /', function(assert) {
+  visit('/list-rentals');
+  visit('/');
+
+  andThen(function() {
+    assert.equal(currentURL(), '/list-rentals');
+    assert.equal(currentURL(), '/');
+  });
+});
+
+A few of things to note in this simple test:
+Acceptance tests are setup by calling the function moduleForAcceptance. This function ensures that your Ember application is started and shut down between each test.
+QUnit passes in an object called an assert to each test function. An assert has functions, such as equal(), that allow your test to check for conditions within the test environment. A test must have one passing assert to be successful.
+Ember acceptance tests use a set of test helper functions, such as the visit, andThen, and currentURL functions used above. We'll discuss those functions in more detail later in the tutorial.
+Now run your test suite with the CLI command, ember test --server.
+By default, when you run ember test --server, Ember CLI runs the Testem test runner, which runs Qunit in Chrome and PhantomJS
+
+Testem test runner: 对js 文件进行单元测试的一个脚本测试运行器
+assert 对象，
+equal()方法
+test helper functions： visit 函数，addThen 函数，currentURL
+
+
+ESLint

@@ -1,0 +1,47 @@
+Core Concept：
+1.Maps -URL to a route,
+2.Loads:
+ -a template
+ -a model
+3.Persists to -web server
+4.Loads: -components
+5.Accesses: model data
+
+Maps -URL to a route （可以自己写，也可以通过命令 ember generate route rentals 同时生成 Router，Route Handler和Template)
+
+URL http：//localhost:4200/rentals
+	 >> 
+Router router.js  Router.map(function(){ this.route('rentals’）；}）；
+	 >>
+Route Handler  routes/rental.js  model(){return this.store.findAll('rental') }   - model
+	 >>
+Template templates/rentals.hbs   
+<ul>
+   {{#each model as |rental-unit|}}
+     {{rental-tile rental=rental-unit}}
+    {{/each}}
+</ul>
+           >>
+ComponentA ,ComponentB, ComponentC.
+注释：在template中使用组件时格式{{ 组件名称 组件元素=“新的文字描述” 组件元素=model}}
+
+Router and Route Handlers (Handlerbar)
+Ember router maps the URL to a route handler.
+
+The route handler then typically does two things:
+It renders a template.
+It loads a model that is then available to the template.
+
+template: 使用handlebar模板句法, 双花括号（{{ }}） 来显示属性。
+Handlebars templates: http://handlebarsjs.com/
+
+
+Model
+models: 是持久性状态（数据的持久性），
+
+Component:
+组件的组成由两部分组成： 由handlerbar句法写的模板和定义组件行为的用JS写的源文件。
+a template written in Handlebars, and a source file written in JavaScript that defines the component's behavior.
+隐藏和显示图片可用。
+
+
